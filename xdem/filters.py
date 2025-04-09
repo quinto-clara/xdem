@@ -27,6 +27,8 @@ try:
     _has_cv2 = True
 except ImportError:
     _has_cv2 = False
+from collections.abc import Callable
+
 import numpy as np
 import scipy
 
@@ -239,3 +241,20 @@ pixels within a given radius.
     out_array[outliers] = np.nan
 
     return out_array
+
+
+def generic_filter(array: NDArrayf, filter_function: Callable[..., NDArrayf], kernel_size: int) -> NDArrayf:
+    """
+    Apply a filter from a function
+
+    :param array: the input array to be filtered.
+    :param filter_function: the function of the filter
+    :param kernel_size: the size of the kernel
+
+    :returns: the filtered array (same shape as input)
+    """
+    # Check that array dimension is 2 or 3
+    if np.ndim(array) not in [2, 3]:
+        raise ValueError(f"Invalid array shape given: {array.shape}. Expected 2D or 3D array.")
+
+    return scipy.ndimage.generic_filter(array, filter_function, size=kernel_size)
